@@ -80,16 +80,67 @@ def main():
         border-right: 1px solid #e5e7eb;
     }
     
+    .stSidebar * {
+        color: #1f2937 !important;
+    }
+    
+    .stSidebar .stMarkdown {
+        color: #1f2937 !important;
+    }
+    
+    .stSidebar .stMarkdown h3 {
+        color: #1f2937 !important;
+        font-weight: 600;
+    }
+    
     .stSidebar .stSelectbox > div > div {
         background-color: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
+        color: #1f2937 !important;
     }
     
     .stSidebar .stTextInput > div > div {
         background-color: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
+        color: #1f2937 !important;
+    }
+    
+    .stSidebar .stTextInput input {
+        color: #1f2937 !important;
+    }
+    
+    .stSidebar .stSelectbox select {
+        color: #1f2937 !important;
+    }
+    
+    .stSidebar .stSlider {
+        color: #1f2937 !important;
+    }
+    
+    .stSidebar .stButton button {
+        color: white !important;
+    }
+    
+    .stSidebar .stSuccess {
+        color: #059669 !important;
+    }
+    
+    .stSidebar .stError {
+        color: #dc2626 !important;
+    }
+    
+    .stSidebar .stInfo {
+        color: #2563eb !important;
+    }
+    
+    .stSidebar .stWarning {
+        color: #d97706 !important;
+    }
+    
+    .stSidebar .stCaption {
+        color: #6b7280 !important;
     }
     
     /* Metrics Cards */
