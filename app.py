@@ -436,62 +436,65 @@ def display_deal_card(deal):
     deal_id = f"{deal.name}_{hash(deal['title'])}" if 'title' in deal.index else f"{deal.name}_{hash(str(deal))}"
     
     # Create the card container with custom styling
-    with st.container():
-        # Status badge CSS class
-        status_class = f"status-{deal['status'].lower().replace(' ', '-')}"
-        
-        # Deal card HTML with custom styling
-        min_investment_html = ""
-        if 'min_investment' in deal.index:
-            min_investment_html = f"<div class='deal-details'><strong>Min Investment:</strong> {format_currency(deal['min_investment'])}</div>"
-        
-        due_date_html = ""
-        if 'due_date' in deal.index and pd.notna(deal['due_date']):
-            try:
-                due_date = pd.to_datetime(deal['due_date']).strftime('%B %d, %Y')
-                due_date_html = f"<div class='deal-details'><strong>Due Date:</strong> {due_date}</div>"
-            except:
-                due_date_html = f"<div class='deal-details'><strong>Due Date:</strong> {deal['due_date']}</div>"
-        
-        progress_html = ""
-        if deal['status'] != 'Closed':
-            progress_html = f"<div class='deal-details'><strong>Progress:</strong> {progress:.1f}% raised</div>"
-        
-        st.markdown(f"""
-        <div class="deal-card">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                <h3 class="deal-title">{deal['title']}</h3>
-                <span class="{status_class}">{deal['status']}</span>
-            </div>
-            
-            <div class="deal-description">{deal['description']}</div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div>
-                    <div class="deal-details"><strong>Industry:</strong> {deal['industry']}</div>
-                    <div class="deal-details"><strong>Target Amount:</strong> {format_currency(deal['target_amount'])}</div>
-                    <div class="deal-details"><strong>Raised Amount:</strong> {format_currency(deal['raised_amount'])}</div>
-                </div>
-                <div>
-                    {min_investment_html}
-                    {due_date_html}
-                    {progress_html}
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Progress bar (only for non-closed deals)
-        if deal['status'] != 'Closed':
-            st.progress(min(progress / 100, 1.0))
-        
-        # Action button
-        if 'documents_link' in deal.index and pd.notna(deal['documents_link']) and deal['documents_link'] != '#':
-            st.link_button("View Details", deal['documents_link'], key=f"link_{deal_id}")
-        else:
-            st.button("View Details", disabled=True, help="Document link not available", key=f"btn_{deal_id}")
-        
-        st.markdown("---")
+    st.markdown('<div class="deal-card">', unsafe_allow_html=True)
+    
+    # Status badge CSS class
+    status_class = f"status-{deal['status'].lower().replace(' ', '-')}"
+    
+    # Deal card HTML with custom styling
+    min_investment_html = ""
+    if 'min_investment' in deal.index:
+        min_investment_html = f"<div class='deal-details'><strong>Min Investment:</strong> {format_currency(deal['min_investment'])}</div>"
+    
+    due_date_html = ""
+    if 'due_date' in deal.index and pd.notna(deal['due_date']):
+        try:
+            due_date = pd.to_datetime(deal['due_date']).strftime('%B %d, %Y')
+            due_date_html = f"<div class='deal-details'><strong>Due Date:</strong> {due_date}</div>"
+        except:
+            due_date_html = f"<div class='deal-details'><strong>Due Date:</strong> {deal['due_date']}</div>"
+    
+    progress_html = ""
+    if deal['status'] != 'Closed':
+        progress_html = f"<div class='deal-details'><strong>Progress:</strong> {progress:.1f}% raised</div>"
+    
+    # Title and status row
+    col1, col2 = st.columns([4, 1])
+    with col1:
+        st.markdown(f'<h3 class="deal-title">{deal["title"]}</h3>', unsafe_allow_html=True)
+    with col2:
+        st.markdown(f'<span class="{status_class}">{deal["status"]}</span>', unsafe_allow_html=True)
+    
+    # Description
+    st.markdown(f'<div class="deal-description">{deal["description"]}</div>', unsafe_allow_html=True)
+    
+    # Details in two columns
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(f'<div class="deal-details"><strong>Industry:</strong> {deal["industry"]}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="deal-details"><strong>Target Amount:</strong> {format_currency(deal["target_amount"])}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="deal-details"><strong>Raised Amount:</strong> {format_currency(deal["raised_amount"])}</div>', unsafe_allow_html=True)
+    
+    with col2:
+        if min_investment_html:
+            st.markdown(min_investment_html, unsafe_allow_html=True)
+        if due_date_html:
+            st.markdown(due_date_html, unsafe_allow_html=True)
+        if progress_html:
+            st.markdown(progress_html, unsafe_allow_html=True)
+    
+    # Progress bar (only for non-closed deals)
+    if deal['status'] != 'Closed':
+        st.progress(min(progress / 100, 1.0))
+    
+    # Action button
+    if 'documents_link' in deal.index and pd.notna(deal['documents_link']) and deal['documents_link'] != '#':
+        st.link_button("View Details", deal['documents_link'], key=f"link_{deal_id}")
+    else:
+        st.button("View Details", disabled=True, help="Document link not available", key=f"btn_{deal_id}")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("---")
 
 if __name__ == "__main__":
     main()
