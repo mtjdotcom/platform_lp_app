@@ -37,9 +37,246 @@ def get_status_color(status):
     return colors.get(status, '#6c757d')
 
 def main():
+    # Custom CSS for Isomer Capital-inspired design
+    st.markdown("""
+    <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    /* Global Styles */
+    .stApp {
+        font-family: 'Inter', sans-serif;
+        background-color: #fafafa;
+        color: #1a1a1a;
+    }
+    
+    /* Header Styles */
+    .main-header {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        color: white;
+        padding: 3rem 0;
+        margin: -1rem -1rem 2rem -1rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .main-header h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: -0.025em;
+    }
+    
+    .main-header p {
+        font-size: 1.2rem;
+        margin: 1rem 0 0 0;
+        opacity: 0.9;
+        font-weight: 400;
+    }
+    
+    /* Sidebar Styles */
+    .stSidebar {
+        background-color: #ffffff;
+        border-right: 1px solid #e5e7eb;
+    }
+    
+    .stSidebar .stSelectbox > div > div {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+    
+    .stSidebar .stTextInput > div > div {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+    
+    /* Metrics Cards */
+    .stMetric {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+    }
+    
+    .stMetric > div {
+        color: #1f2937;
+    }
+    
+    .stMetric [data-testid="metric-value"] {
+        color: #1e40af;
+        font-weight: 600;
+    }
+    
+    /* Deal Cards */
+    .deal-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border: 1px solid #e5e7eb;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .deal-card:hover {
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+    
+    .deal-title {
+        color: #1f2937;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+    }
+    
+    .deal-description {
+        color: #6b7280;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .deal-details {
+        color: #374151;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    .deal-details strong {
+        color: #1f2937;
+        font-weight: 600;
+    }
+    
+    /* Status Badge */
+    .status-open {
+        background-color: #10b981;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-align: center;
+        display: inline-block;
+    }
+    
+    .status-due-diligence {
+        background-color: #f59e0b;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-align: center;
+        display: inline-block;
+    }
+    
+    .status-closed {
+        background-color: #ef4444;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-align: center;
+        display: inline-block;
+    }
+    
+    /* Buttons */
+    .stButton > button {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .stButton > button:hover {
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-1px);
+    }
+    
+    .stLinkButton > a {
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        color: white !important;
+        text-decoration: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: inline-block;
+    }
+    
+    .stLinkButton > a:hover {
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-1px);
+    }
+    
+    /* Progress Bar */
+    .stProgress > div > div {
+        background: linear-gradient(90deg, #3b82f6 0%, #1e40af 100%);
+        border-radius: 10px;
+        height: 8px;
+    }
+    
+    .stProgress > div {
+        background-color: #e5e7eb;
+        border-radius: 10px;
+        height: 8px;
+    }
+    
+    /* Hide Streamlit branding */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    
+    /* Custom spacing */
+    .element-container {
+        margin-bottom: 1rem;
+    }
+    
+    /* Section dividers */
+    .stDivider {
+        margin: 2rem 0;
+        border-color: #e5e7eb;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .main-header h1 {
+            font-size: 2rem;
+        }
+        
+        .main-header p {
+            font-size: 1rem;
+        }
+        
+        .deal-card {
+            padding: 1.5rem;
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     # Header
-    st.title("🏢 Co-Investment Portal")
-    st.markdown("Explore exclusive investment opportunities tailored for our valued partners.")
+    st.markdown("""
+    <div class="main-header">
+        <h1>Co-Investment Portal</h1>
+        <p>Explore exclusive investment opportunities tailored for our valued partners</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     # Initialize session state for data
     if 'deals_data' not in st.session_state:
@@ -49,10 +286,10 @@ def main():
     
     # Sidebar for controls
     with st.sidebar:
-        st.header("🔧 Controls")
+        st.markdown("### Portfolio Controls")
         
         # Refresh button
-        if st.button("🔄 Refresh Data", type="primary"):
+        if st.button("Refresh Data", type="primary"):
             st.session_state.deals_data = None
             st.session_state.last_refresh = datetime.now()
             st.rerun()
@@ -68,9 +305,9 @@ def main():
                 try:
                     sheets_service = get_sheets_service()
                     st.session_state.deals_data = sheets_service.get_deals()
-                    st.success("✅ Data loaded successfully!")
+                    st.success("Data loaded successfully!")
                 except Exception as e:
-                    st.error(f"❌ Error loading data: {str(e)}")
+                    st.error(f"Error loading data: {str(e)}")
                     st.info("Please check your Google Sheets connection and permissions.")
                     # Create empty DataFrame to prevent slider errors
                     st.session_state.deals_data = pd.DataFrame()
@@ -82,7 +319,7 @@ def main():
             st.info("Make sure your Google Sheet has the following columns: Title, Description, Industry, Target Amount, Raised Amount, Status, Min Investment, Due Date, Documents Link")
             
             # Show sample data structure
-            with st.expander("📋 Expected Google Sheet Structure"):
+            with st.expander("Expected Google Sheet Structure"):
                 st.markdown("""
                 **Column Headers (first row of your Google Sheet):**
                 - **Title**: Name of the investment deal
@@ -99,7 +336,7 @@ def main():
             st.stop()
         
         # Filters
-        st.header("🔍 Filters")
+        st.markdown("### Investment Filters")
         
         # Search
         search_term = st.text_input("Search deals:", placeholder="Enter title or description...")
@@ -183,17 +420,12 @@ def main():
     st.divider()
     
     # Deal cards
-    st.header("📋 Investment Deals")
+    st.markdown("### Investment Opportunities")
     
-    # Display deals in a grid layout
-    for i in range(0, len(filtered_df), 2):
-        cols = st.columns(2)
-        
-        for j, col in enumerate(cols):
-            if i + j < len(filtered_df):
-                deal = filtered_df.iloc[i + j]
-                with col:
-                    display_deal_card(deal)
+    # Display deals in a single column layout for better readability
+    for i in range(len(filtered_df)):
+        deal = filtered_df.iloc[i]
+        display_deal_card(deal)
 
 def display_deal_card(deal):
     """Display a single deal card"""
@@ -203,71 +435,63 @@ def display_deal_card(deal):
     # Create unique identifier for this deal card
     deal_id = f"{deal.name}_{hash(deal['title'])}" if 'title' in deal.index else f"{deal.name}_{hash(str(deal))}"
     
-    # Create the card container
+    # Create the card container with custom styling
     with st.container():
+        # Status badge CSS class
+        status_class = f"status-{deal['status'].lower().replace(' ', '-')}"
+        
+        # Deal card HTML with custom styling
+        min_investment_html = ""
+        if 'min_investment' in deal.index:
+            min_investment_html = f"<div class='deal-details'><strong>Min Investment:</strong> {format_currency(deal['min_investment'])}</div>"
+        
+        due_date_html = ""
+        if 'due_date' in deal.index and pd.notna(deal['due_date']):
+            try:
+                due_date = pd.to_datetime(deal['due_date']).strftime('%B %d, %Y')
+                due_date_html = f"<div class='deal-details'><strong>Due Date:</strong> {due_date}</div>"
+            except:
+                due_date_html = f"<div class='deal-details'><strong>Due Date:</strong> {deal['due_date']}</div>"
+        
+        progress_html = ""
+        if deal['status'] != 'Closed':
+            progress_html = f"<div class='deal-details'><strong>Progress:</strong> {progress:.1f}% raised</div>"
+        
         st.markdown(f"""
-        <div style="
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        ">
-        """, unsafe_allow_html=True)
-        
-        # Title and status
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.subheader(deal['title'])
-        with col2:
-            status_color = get_status_color(deal['status'])
-            st.markdown(f"""
-            <div style="
-                background-color: {status_color};
-                color: white;
-                padding: 5px 10px;
-                border-radius: 15px;
-                text-align: center;
-                font-size: 12px;
-                font-weight: bold;
-            ">{deal['status']}</div>
-            """, unsafe_allow_html=True)
-        
-        # Description
-        st.write(deal['description'])
-        
-        # Details
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write(f"**Industry:** {deal['industry']}")
-            st.write(f"**Target Amount:** {format_currency(deal['target_amount'])}")
-            st.write(f"**Raised Amount:** {format_currency(deal['raised_amount'])}")
-        
-        with col2:
-            # Handle missing columns gracefully
-            if 'min_investment' in deal.index:
-                st.write(f"**Min Investment:** {format_currency(deal['min_investment'])}")
+        <div class="deal-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <h3 class="deal-title">{deal['title']}</h3>
+                <span class="{status_class}">{deal['status']}</span>
+            </div>
             
-            if 'due_date' in deal.index and pd.notna(deal['due_date']):
-                try:
-                    due_date = pd.to_datetime(deal['due_date']).strftime('%B %d, %Y')
-                    st.write(f"**Due Date:** {due_date}")
-                except:
-                    st.write(f"**Due Date:** {deal['due_date']}")
+            <div class="deal-description">{deal['description']}</div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                    <div class="deal-details"><strong>Industry:</strong> {deal['industry']}</div>
+                    <div class="deal-details"><strong>Target Amount:</strong> {format_currency(deal['target_amount'])}</div>
+                    <div class="deal-details"><strong>Raised Amount:</strong> {format_currency(deal['raised_amount'])}</div>
+                </div>
+                <div>
+                    {min_investment_html}
+                    {due_date_html}
+                    {progress_html}
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
         # Progress bar (only for non-closed deals)
         if deal['status'] != 'Closed':
-            st.write(f"**Progress:** {progress:.1f}% raised")
             st.progress(min(progress / 100, 1.0))
         
         # Action button
         if 'documents_link' in deal.index and pd.notna(deal['documents_link']) and deal['documents_link'] != '#':
-            st.link_button("📄 View Details", deal['documents_link'], key=f"link_{deal_id}")
+            st.link_button("View Details", deal['documents_link'], key=f"link_{deal_id}")
         else:
-            st.button("📄 View Details", disabled=True, help="Document link not available", key=f"btn_{deal_id}")
+            st.button("View Details", disabled=True, help="Document link not available", key=f"btn_{deal_id}")
         
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("---")
 
 if __name__ == "__main__":
     main()
