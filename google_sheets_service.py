@@ -20,24 +20,29 @@ class GoogleSheetsService:
                 'https://www.googleapis.com/auth/drive'
             ]
             
-            # Try to get credentials from Streamlit secrets
-            if 'gcp_service_account' in st.secrets:
-                # Using Streamlit secrets
-                credentials_info = dict(st.secrets['gcp_service_account'])
-                credentials = Credentials.from_service_account_info(credentials_info, scopes=scope)
-            else:
-                # Try environment variable
-                credentials_json = os.getenv('GOOGLE_APPLICATION_CREDENTIALS_JSON')
-                if credentials_json:
+            # Try to get credentials from environment variables (Replit secrets)
+            credentials_json = os.getenv('gcp_service_account')
+            if credentials_json:
+                try:
                     credentials_info = json.loads(credentials_json)
                     credentials = Credentials.from_service_account_info(credentials_info, scopes=scope)
-                else:
-                    # Try credentials file
-                    credentials_file = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'credentials.json')
-                    if os.path.exists(credentials_file):
-                        credentials = Credentials.from_service_account_file(credentials_file, scopes=scope)
+                except json.JSONDecodeError:
+                    raise Exception("Invalid JSON format in gcp_service_account secret")
+            else:
+                # Try Streamlit secrets as fallback
+                try:
+                    if 'gcp_service_account' in st.secrets:
+                        credentials_info = dict(st.secrets['gcp_service_account'])
+                        credentials = Credentials.from_service_account_info(credentials_info, scopes=scope)
                     else:
-                        raise Exception("No Google credentials found. Please provide credentials via Streamlit secrets, environment variable, or credentials file.")
+                        # Try credentials file as last resort
+                        credentials_file = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'credentials.json')
+                        if os.path.exists(credentials_file):
+                            credentials = Credentials.from_service_account_file(credentials_file, scopes=scope)
+                        else:
+                            raise Exception("No Google credentials found. Please provide credentials via the gcp_service_account secret.")
+                except Exception as e:
+                    raise Exception(f"No Google credentials found. Please provide credentials via the gcp_service_account secret. Error: {str(e)}")
             
             # Authorize and create client
             self.client = gspread.authorize(credentials)
@@ -48,12 +53,18 @@ class GoogleSheetsService:
     def connect_to_sheet(self, sheet_url_or_key=None, sheet_name=None):
         """Connect to a specific Google Sheet"""
         try:
-            # Get sheet URL/key from environment or secrets
+            # Get sheet URL/key from environment variables (Replit secrets)
             if not sheet_url_or_key:
-                sheet_url_or_key = os.getenv('GOOGLE_SHEET_URL') or st.secrets.get('GOOGLE_SHEET_URL')
+                sheet_url_or_key = os.getenv('GOOGLE_SHEET_URL')
+                if not sheet_url_or_key:
+                    # Try Streamlit secrets as fallback
+                    try:
+                        sheet_url_or_key = st.secrets.get('GOOGLE_SHEET_URL')
+                    except:
+                        pass
             
             if not sheet_url_or_key:
-                raise Exception("No Google Sheet URL provided. Please set GOOGLE_SHEET_URL in environment or secrets.")
+                raise Exception("No Google Sheet URL provided. Please set GOOGLE_SHEET_URL in your secrets.")
             
             # Open the spreadsheet
             if sheet_url_or_key.startswith('https://'):

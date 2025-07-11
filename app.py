@@ -72,12 +72,30 @@ def main():
                 except Exception as e:
                     st.error(f"❌ Error loading data: {str(e)}")
                     st.info("Please check your Google Sheets connection and permissions.")
-                    st.stop()
+                    # Create empty DataFrame to prevent slider errors
+                    st.session_state.deals_data = pd.DataFrame()
         
         deals_df = st.session_state.deals_data
         
         if deals_df is None or deals_df.empty:
-            st.warning("No deals data available.")
+            st.warning("No deals data available. Please check your Google Sheet connection.")
+            st.info("Make sure your Google Sheet has the following columns: Title, Description, Industry, Target Amount, Raised Amount, Status, Min Investment, Due Date, Documents Link")
+            
+            # Show sample data structure
+            with st.expander("📋 Expected Google Sheet Structure"):
+                st.markdown("""
+                **Column Headers (first row of your Google Sheet):**
+                - **Title**: Name of the investment deal
+                - **Description**: Detailed description of the opportunity
+                - **Industry**: Industry category (e.g., Technology, Real Estate, Healthcare)
+                - **Target Amount**: Target funding amount (numbers only, e.g., 5000000)
+                - **Raised Amount**: Amount already raised (numbers only, e.g., 3500000)
+                - **Status**: Deal status (Open, Due Diligence, Closed)
+                - **Min Investment**: Minimum investment amount (numbers only, e.g., 50000)
+                - **Due Date**: Investment deadline (e.g., 2025-08-15)
+                - **Documents Link**: Link to deal documents (optional)
+                """)
+            
             st.stop()
         
         # Filters
@@ -95,9 +113,14 @@ def main():
         selected_status = st.selectbox("Status:", statuses)
         
         # Amount range filter
-        if not deals_df['target_amount'].isna().all():
+        if not deals_df['target_amount'].isna().all() and deals_df['target_amount'].max() > 0:
             min_amount = int(deals_df['target_amount'].min())
             max_amount = int(deals_df['target_amount'].max())
+            
+            # Ensure min_amount is less than max_amount
+            if min_amount >= max_amount:
+                max_amount = min_amount + 1000000  # Add 1M as buffer
+            
             amount_range = st.slider(
                 "Target Amount Range:",
                 min_value=min_amount,
@@ -177,6 +200,9 @@ def display_deal_card(deal):
     # Calculate progress
     progress = (deal['raised_amount'] / deal['target_amount']) * 100 if deal['target_amount'] > 0 else 0
     
+    # Create unique identifier for this deal card
+    deal_id = f"{deal.name}_{hash(deal['title'])}" if 'title' in deal.index else f"{deal.name}_{hash(str(deal))}"
+    
     # Create the card container
     with st.container():
         st.markdown(f"""
@@ -219,8 +245,11 @@ def display_deal_card(deal):
             st.write(f"**Raised Amount:** {format_currency(deal['raised_amount'])}")
         
         with col2:
-            st.write(f"**Min Investment:** {format_currency(deal['min_investment'])}")
-            if pd.notna(deal['due_date']):
+            # Handle missing columns gracefully
+            if 'min_investment' in deal.index:
+                st.write(f"**Min Investment:** {format_currency(deal['min_investment'])}")
+            
+            if 'due_date' in deal.index and pd.notna(deal['due_date']):
                 try:
                     due_date = pd.to_datetime(deal['due_date']).strftime('%B %d, %Y')
                     st.write(f"**Due Date:** {due_date}")
@@ -233,10 +262,10 @@ def display_deal_card(deal):
             st.progress(min(progress / 100, 1.0))
         
         # Action button
-        if pd.notna(deal['documents_link']) and deal['documents_link'] != '#':
-            st.link_button("📄 View Details", deal['documents_link'])
+        if 'documents_link' in deal.index and pd.notna(deal['documents_link']) and deal['documents_link'] != '#':
+            st.link_button("📄 View Details", deal['documents_link'], key=f"link_{deal_id}")
         else:
-            st.button("📄 View Details", disabled=True, help="Document link not available")
+            st.button("📄 View Details", disabled=True, help="Document link not available", key=f"btn_{deal_id}")
         
         st.markdown("</div>", unsafe_allow_html=True)
 
